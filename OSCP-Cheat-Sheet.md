@@ -286,7 +286,7 @@ C:\> plink.exe -N -R <LPORT>:127.0.0.1:<RPORT> -P 22 <RHOST>
 
 -------------------------------------------------------------
 
-## Port Forwarding w/NETSH.exe
+## Port Forwarding w/NETSH.exe | Windows
 
 **Establish connection:**
 
