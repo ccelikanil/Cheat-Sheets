@@ -227,7 +227,7 @@ from the **PIVOTED** box to perform a netcat port scan.
 
 **NOTE 2:**
 
-- If both ``proxychains`` and ``nc`` would take too long, try to upload **[!][nmap static binary](https://github.com/andrew-d/static-binaries/blob/master/binaries/linux/x86_64/nmap)** to the **PIVOT** box and run **nmap**.
+- If both ``proxychains`` and ``nc`` would take too long, try to upload **[nmap static binary](https://github.com/andrew-d/static-binaries/blob/master/binaries/linux/x86_64/nmap)** to the **PIVOT** box and run **nmap**.
 
 **Fourth**, to perform **GOBUSTER** scan, do:
 
