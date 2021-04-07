@@ -1,5 +1,11 @@
 # OSCP Cheat Sheet by 0xpr0N3rd
 
+## Directory Traversal && LFI
+
+
+
+-------------------------------------------------------------
+
 ## File Transfers
 
 **Method 1 (SMB Server) | Windows -> Linux**
@@ -191,6 +197,37 @@ On **TARGET**:
 
 -------------------------------------------------------------
 
+## NFS
+
+**Scan for NFS NSE scripts:**
+
+```
+# nmap -p 111 -sV -sC -vv --script nfs* <RHOST>
+
+or
+
+# nmap -p 111 -sV -sC -vv --script=rpcinfo <RHOST>
+```
+
+**Mount a share:**
+
+```
+# mkdir <RSHARE>
+# mount -o nolock <RHOST>:/<RSHARE> <PATH_TO_RSHARE_ON_LOCAL>
+```
+
+**Unmount a share:**
+
+```
+# umount <RHOST>:/<RSHARE> <PATH_TO_RSHARE_ON_LOCAL>
+
+or
+
+# umount -f -l <PATH_TO_RSHARE_ON_LOCAL>
+```
+
+-------------------------------------------------------------
+
 ## Port Forwarding 
 
 **Port Forwarding w/ProxyChains | UNIX**
@@ -318,4 +355,71 @@ meterpreter> portfwd add –l <LPORT> –p <RPORT> –r <RHOST>
 meterpreter> portfwd delete –l <LPORT> –p <RPORT> –r <RHOST>
 
 ```
+
+-------------------------------------------------------------
+
+# SMB
+
+**Nmap:**
+
+```
+# nmap -sV -sC -vv -p 139,445 <RHOST>
+```
+
+**NBTSCAN *(for NetBIOS Service, Port 139)*:**
+
+```
+# nbtscan -r <RHOST>/<SUBNET>
+```
+
+**Nmap NSE Scripts:**
+
+```
+# nmap -sV -sC -vv -p 139,445 --script smb* <RHOST>
+```
+
+**enum4linux:**
+
+```
+# enum4linux -a <RHOST>
+```
+
+**SMBClient:**
+
+```
+# smbclient -L //<RHOST>
+
+# smbclient //<RHOST>/<SHARE>
+```
+
+-------------------------------------------------------------
+
+## SNMP
+
+**Nmap:**
+
+```
+# nmap -sU --open -p 161 <RHOST>
+```
+
+**Onesixtyone:**
+
+```
+# onesixtyone -c community -i <IP_LIST>
+```
+
+**Enumeration:**
+
+```
+# snmpwalk -c <COMMUNITY_STRING> -v <SNMP_VERSION> -t <TIMEOUT_PERIOD> <RHOST>
+```
+
+-------------------------------------------------------------
+
+
+
+
+
+
+
 
