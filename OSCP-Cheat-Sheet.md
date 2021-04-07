@@ -220,7 +220,7 @@ socks5  127.0.0.1 <LISTEN_PORT>
 - If **NMAP** scan would take too long, just do:
 
 ```
-# nc -nvv -w 1 -z 10.1.1.224 1-65535
+# nc -nvv -w 1 -z <RHOST> <PORT_RANGE>
 ```
 
 from the **PIVOTED** box to perform a netcat port scan.
