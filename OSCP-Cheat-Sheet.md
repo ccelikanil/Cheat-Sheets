@@ -191,9 +191,9 @@ On **TARGET**:
 
 -------------------------------------------------------------
 
-## Port Forwarding
+## Port Forwarding w/ProxyChains | UNIX
 
-**First**, on **LOCAL** set up ``/etc/proxychains.conf`` file:
+- **First**, on **LOCAL** set up ``/etc/proxychains.conf`` file:
 
 ```
 [ProxyList]
@@ -203,16 +203,16 @@ On **TARGET**:
 socks5  127.0.0.1 <LISTEN_PORT>
 ```
 
-**Second**, on **LOCAL**, do the **Dynamic** port forwarding. This forwards all target ports through the tunnel to our local:
+- **Second**, on **LOCAL**, do the **Dynamic** port forwarding. This forwards all target ports through the tunnel to our local:
 
 ```
 # ssh -f -N -D 127.0.0.1:<LISTEN_PORT> <USERNAME>@<RHOST>
 ```
 
-**Third**, for instance, to perform **NMAP** through the tunnel, do:
+- **Third**, for instance, to perform **NMAP** through the tunnel, do:
 
 ```
-# proxychains -q nmap -sV -Pn --top-ports=20 -sC -sT -vv <RHOST>        <- Remember "-sT" flag is a must since nmap can only scan TCP ports through proxychains 
+# proxychains -q nmap -sV -Pn --top-ports 20 -sC -sT -vv <RHOST>        <- Remember "-sT" flag is a must since nmap can only scan TCP ports through proxychains 
 ```
 
 **NOTE:**
@@ -235,13 +235,13 @@ from the **PIVOTED** box to perform a netcat port scan.
 # gobuster dir -p socks5://127.0.0.1:<LISTEN_PORT> -u http://<RHOST>:<RPORT>/ -w <WORDLIST> -x <EXTENSIONS> -t 200
 ```
 
-**Fifth**, to perform **WFUZZ**, do:
+- **Fifth**, to perform **WFUZZ**, do:
 
 ```
 # wfuzz -p 127.0.0.1:<LISTENPORT>:SOCKS5 -c -w <WORDLIST> --hc 404 http://<RHOST>:<RPORT>/FUZZ   <- If there's an error, use SOCKS4 (configure SOCKS4 also)
 ```
 
-**Sixth**, to redirect tunneled traffic on the **BROWSER**, do:
+- **Sixth**, to redirect tunneled traffic on the **BROWSER**, do:
 
 1. Open **FoxyProxy** settings
 2. Select **Proxy Type** as ``SOCKS4`` or ``SOCKS5``
@@ -250,12 +250,41 @@ from the **PIVOTED** box to perform a netcat port scan.
 
 -------------------------------------------------------------
 
--- this cheat sheet will be continuously updated 
+## Port Forwarding w/PLINK.exe | Windows
 
+***Upload*** ``plink.exe`` ***to the box. Preferably, under*** ``C:\Public\Downloads\`` ***location.***
 
+- SOCKS-based Dynamic Port Forwarding:
 
+```
+C:\> plink.exe -N -D 127.0.0.1:<LHOST> -P <SSH PORT> <RHOST>
+```
 
+- Forward local host to remote address:
 
+```
+C:\> plink.exe -ssh -l <REMOTE_SSH_USERNAME> -pw <PASSWORD> <RHOST>:<RPORT>:127.0.0.1:<LPORT> <RHOST>
+```
+
+- Forward local when a dedicated SOCKS proxy server is available
+
+```
+C:\> plink.exe -N -L <LHOST>:<SOCKS_IP>:<SOCKS_PORT>
+```
+
+- Remote Port Forwarding:
+
+```
+C:\> plink.exe -N -R <LPORT>:127.0.0.1:<RPORT> -P 22 <RHOST>
+```
+
+- Nmap:
+
+```
+# nmap -sS -sV 127.0.0.1 -p <PORT>
+```
+
+-------------------------------------------------------------
 
 
 
