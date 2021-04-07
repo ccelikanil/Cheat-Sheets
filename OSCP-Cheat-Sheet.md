@@ -46,7 +46,7 @@ On **LOCAL**:
 ```
 # pip install pyftpdlib
 
-# python -m pyftpd -p 21 -w         <- "-w" flag enables anonymous write permission
+# python -m pyftpdlib -p 21 -w         <- "-w" flag enables anonymous write permission
 ```
 
 On **TARGET**:
@@ -191,7 +191,9 @@ On **TARGET**:
 
 -------------------------------------------------------------
 
-## Port Forwarding w/ProxyChains | UNIX
+## Port Forwarding 
+
+**Port Forwarding w/ProxyChains | UNIX**
 
 **First**, on **LOCAL** set up ``/etc/proxychains.conf`` file:
 
@@ -250,7 +252,7 @@ from the **PIVOTED** box to perform a netcat port scan.
 
 -------------------------------------------------------------
 
-## Port Forwarding w/PLINK.exe | Windows
+**Port Forwarding w/PLINK.exe | Windows**
 
 ***Upload*** ``plink.exe`` ***to the box. Preferably, under*** ``C:\Public\Downloads\`` ***location.***
 
@@ -286,7 +288,7 @@ C:\> plink.exe -N -R <LPORT>:127.0.0.1:<RPORT> -P 22 <RHOST>
 
 -------------------------------------------------------------
 
-## Port Forwarding w/NETSH.exe | Windows
+**Port Forwarding w/NETSH.exe | Windows**
 
 **Establish connection:**
 
@@ -308,11 +310,12 @@ C:\> netsh advfirewall add rule name="forward_port_rule" protocol=TCP dir=in loc
 
 -------------------------------------------------------------
 
-## HTTP Tunnelling Through Deep Packet Inspection
+**Port Forwarding w/Metasploit**
 
--------------------------------------------------------------
+```
+meterpreter> portfwd add –l <LPORT> –p <RPORT> –r <RHOST>
 
-## Port Forwarding w/Metasploit 
+meterpreter> portfwd delete –l <LPORT> –p <RPORT> –r <RHOST>
 
-
+```
 
