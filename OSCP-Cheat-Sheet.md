@@ -496,6 +496,28 @@ meterpreter> portfwd delete –l <LPORT> –p <RPORT> –r <RHOST>
 
 ```
 
+##
+
+### Double Pivoting w/SSH
+
+Consider you want to pivot from **"Network A"** to **"Network B"**. Then, from **"Network B"**, you want to pivot to **"Network C"**
+
+**TL;DR -> Pivot from A to B and B to C.** 
+
+First, set up an **SSH Local Port Forwarding** from the second pivot point ***(Network B)*** to the first pivot point ***(Network A)***:
+
+```
+# ssh -f -N -L <BIND_PORT>:<RHOST_OF_C>:<RPORT_TO_FORWARD_FROM_C> <USER_OF_B>@<RHOST_OF_B>
+```
+
+Then, after establishing a connection from **Network C**, simply create an SSH tunnel from **Network B** to **Network A** by **SSH Dynamic Port Forwarding**:
+
+```
+# ssh -f -N -p <BIND_PORT> -D <NEW_BIND_PORT> <USER_OF_C>@127.0.0.1
+```
+
+**Note:** Don't forget to add new entry to your ``/etc/proxychains.conf`` file for new bind port.
+
 -------------------------------------------------------------
 
 ## Remote File Inclusion
