@@ -535,6 +535,124 @@ If somehow you need to use a **DSS** private key instead of a **RSA** private ke
 # ssh <USER>@<RHOST> -oPubkeyAcceptedKeyTypes=ssh-dss
 ```
 
+``Unable to negotiate with x.x.x.x port 22: no matching key exchange method found.`` Error:
+
+```
+# ssh <USER>@<RHOST> <USE_DIFFIE_IF_APPLICABLE> -c 3des-cbc
+```
+
+-------------------------------------------------------------
+
+## Privilege Escalation | Linux
+
+If possible always check sudo rights first:
+
+```
+# sudo -l
+```
+
+Execute allowed sudo binary for a user other than ``root`` user:
+
+```
+# sudo -u <USERNAME> <BINARY>
+```
+
+Check SUID allowed binaries:
+
+```
+# find / -perm -u=s -type f 2>/dev/null
+
+or 
+
+# find / -user root -perm -4000 -exec ls -ldb {} \; 2>/dev/null
+```
+
+Find files containing specific string:
+
+```
+# find / 2>>/dev/null | grep -i "<STRING>"
+```
+
+Find all files belonging to a specific user:
+
+```
+# find / -user <USER> -type f 2>>/dev/null
+```
+
+Always check CRONJOBS:
+
+```
+# cat /etc/crontab
+```
+
+Always check ``history`` and ``.bash_history``:
+
+```
+# history
+
+# cat /home/user/.bash_history
+```
+
+``No tty present`` fix:
+
+```
+# python -c 'import pty;pty.spawn("/bin/bash")'
+
+or
+
+# python3 -c 'import pty;pty.spawn("/bin/bash")'
+
+or
+
+# <CTRL+Z>
+# stty raw -echo;fg
+# <ENTER> <ENTER>
+```
+
+Execution Flow Hijacking:
+
+```
+# export PATH=<PATH_TO_YOUR_BINARY>:$PATH
+```
+
+Always check MySQL version *(if applicable)* for **RAPTOR** exploit:
+
+```
+# mysql -V
+```
+
+Check out possible kernel exploits:
+
+```
+# uname -r 
+
+# uname -a
+
+# hostname
+```
+
+Check backup files. Possible directories:
+
+```
+/root
+/home
+/tmp
+/var
+/var/backups
+/opt
+/opt/backups
+/usr
+```
+
+Check exploits for running services:
+
+```
+# ps aux | grep <USER>
+# ps aux | grep root
+```
+
+
+
 -------------------------------------------------------------
 
 ## Remote File Inclusion
@@ -589,6 +707,18 @@ In case SMBClient would throw an error line such as ``Protocol Negotiation Faile
 
 ```
 # smbclient //<RHOST>/<SHARE> --option='client min protocol=nt1'
+```
+
+Check permissions on SMB share:
+
+```
+# smbclient -H <RHOST> 
+```
+
+Download SMB share folders recursively:
+
+```
+# smbclient -R <RHOST>/<SHARE_NAME>
 ```
 
 -------------------------------------------------------------
