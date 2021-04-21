@@ -370,7 +370,7 @@ or
 
 ## Port Forwarding 
 
-### Port Forwarding w/ProxyChains | UNIX
+### Port Forwarding w/SSH & ProxyChains | UNIX
 
 **First**, on **LOCAL** set up ``/etc/proxychains.conf`` file:
 
@@ -518,6 +518,23 @@ Then, after establishing a connection from **Network C**, simply create an SSH t
 
 **Note:** Don't forget to add new entry to your ``/etc/proxychains.conf`` file for new bind port.
 
+##
+
+### SSH Connection Problems
+
+If you've been asked a ``diffie-hellman-key`` while trying to establish a connection, use following flag:
+
+```
+# ssh <USER>@<RHOST> -oKexAlgorithms=+diffie-hellman-group1-sha1
+```
+
+If somehow you need to use a **DSS** private key instead of a **RSA** private key, use following flag:
+
+```
+# chmod 600 <DSS_PVT_KEY_FILE>
+# ssh <USER>@<RHOST> -oPubkeyAcceptedKeyTypes=ssh-dss
+```
+
 -------------------------------------------------------------
 
 ## Remote File Inclusion
@@ -566,6 +583,12 @@ Check if there's a request popped up in web server or nc listener.
 # smbclient -L //<RHOST>
 
 # smbclient //<RHOST>/<SHARE>
+```
+
+In case SMBClient would throw an error line such as ``Protocol Negotiation Failed`` while trying to connect to a share, just add following flag:
+
+```
+# smbclient //<RHOST>/<SHARE> --option='client min protocol=nt1'
 ```
 
 -------------------------------------------------------------
