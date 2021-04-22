@@ -1329,6 +1329,12 @@ C:\> net start <SERVICE_NAME>
 C:\> net stop <SERVICE_NAME>
 ```
 
+##
+
+**Exploiting Unquoted Service Path:**
+
+
+
 -------------------------------------------------------------
 
 ## Remote File Inclusion
