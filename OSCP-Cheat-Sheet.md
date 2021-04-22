@@ -879,9 +879,9 @@ FREEDOM!
 
 For ``rbash``:
 
-Check out #1: https://www.exploit-db.com/docs/english/44592-linux-restricted-shell-bypass-guide.pdf
-Check out #2: https://d00mfist.gitbooks.io/ctf/content/escaping_restricted_shell.html
-Check out #3: https://fireshellsecurity.team/restricted-linux-shell-escaping-techniques/
+- Check out #1: https://www.exploit-db.com/docs/english/44592-linux-restricted-shell-bypass-guide.pdf
+- Check out #2: https://d00mfist.gitbooks.io/ctf/content/escaping_restricted_shell.html
+- Check out #3: https://fireshellsecurity.team/restricted-linux-shell-escaping-techniques/
 
 ##
 
