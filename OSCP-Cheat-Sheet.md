@@ -1109,12 +1109,162 @@ Click ``!``:
 - LinEnum
 - LinPrivChecker
 - LinuxExploitSuggester2
+- LinusSmartEnumeration
 - Pspy64
 - Traitor (SUID)
 
 -------------------------------------------------------------
 
 ## Privilege Escalation | Windows
+
+**Binary checks:**
+
+Always start with checking your privs, similar to ``sudo -l``
+
+```
+C:\> whoami /priv
+```
+
+Dangerous User Privileges:
+
+``SEImpersonatePrivilege`` 
+
+```
+The main thing is that this privilege gives you permissions to act as any other user, just like sudo rights.
+
+Don't even waste your time, go for JuicyPotato directly.
+```
+
+``SeAssignPrimaryPrivilege``
+
+```
+This assigns an Access Token to a process. Again, go with JuicyPotato.
+```
+
+``SeBackUpPrivilege``
+
+```
+Gives permission to read files, which means you can extract passwords or hashes from the registry.
+
+Go for Pass-the-Hash Attack
+```
+
+``SeRestorePrivilege``
+
+```
+You can modify service binaries. Modify .dll and registry settings.
+```
+
+Other privileges that should be checked out:
+
+- ``SeCreateTokenPrivilege``
+- ``SeLoadDriverPrivilege``
+- ``SeDebugPrivilege``
+
+##
+
+**Check Kernel Exploits:**
+
+Check out system information first:
+
+```
+C:\> systeminfo
+
+or
+
+C:\> systeminfo | findstr /B /C:"OS Name" /C:"Os Version"
+
+or
+
+C:\> winver (RDP or VNC)
+
+or
+
+C:\> wmic os get Caption,CSDVersion /value
+
+or
+
+C:\> ver
+```
+
+Hopefully, if ``systeminfo`` worked, copy the output and go for ``windows-exploit-suggester.py``:
+
+```
+# python windows-exploit-suggester.py --update
+# python windows-exploit-suggester.py --database ***.xls --systeminfo <SYSINFO_FILE>
+```
+
+You can find compiled exploits in here: ``https://github.com/SecWiki/windows-kernel-exploits``
+
+OR, use ``searchsploit``
+
+##
+
+**Basic enumeration:**
+
+Get patch information:
+
+```
+C:\> wmic qfe get Caption, Description, HotFixID, InstalledOn
+```
+
+Get groups and permissions:
+
+```
+C:\> whoami username /all
+```
+
+Get user list:
+
+```
+C:\> net user
+```
+
+Get information for specific user:
+
+```
+C:\> net user <USERNAME>
+```
+
+List all processes:
+
+```
+C:\> netstat -ano
+
+or
+
+C:\> tasklist /SVC
+```
+
+List firewall rules:
+
+```
+C:\> netsh advfirewall firewall show rule name=all
+```
+
+List all installed software and versions:
+
+```
+C:\> wmic product get name, version
+```
+
+Get scheduled task list:
+
+```
+C:\> schtasks /query /ms LIST /v
+```
+
+List vulnerable drivers:
+
+```
+C:\> driverquery.exe /fo table
+```
+
+##
+
+**Service Exploits:**
+
+
 
 -------------------------------------------------------------
 
