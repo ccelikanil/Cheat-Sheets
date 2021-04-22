@@ -1,5 +1,9 @@
 # OSCP Cheat Sheet by 0xpr0N3rd
 
+**Thanks to JohnJHacking && ByteFellow for some parts of this list
+
+##
+
 ## Directory Traversal & LFI
 
 ### Directory Traversal
