@@ -1,6 +1,6 @@
 # OSCP Cheat Sheet by 0xpr0N3rd
 
-**Thanks to JohnJHacking && ByteFellow for some parts on this list.**
+**Thanks to JohnJHacking && ByteFellow for Privilege Escalation parts on this list.**
 
 ##
 
