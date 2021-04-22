@@ -779,7 +779,7 @@ mysql > SHOW VARIABLES LIKE 'datadir';             <- Locate where the plugin fi
 mysql > CREATE TABLE potato(line blob);
 mysql > INSERT INTO potato VALUES(load_file('/tmp/raptor_udf2.so'));
 mysql > SELECT * FROM potato into dumpfile '/path_to_plugins_directory/raptor_udf2.so';
-mysql > CREATE FUNCTION do_system RETURNS INTEGER SONAME 'raptor_udf2.so';    <- If you get an error (errno: 11) at this point, that means you need to repeat the previous step with different MySQL location, e.g. /usr/lib/mysql/raptor_udf2.so or /usr/lib/x86_64-linux-gnu/mariadb19/plugin/raptor_udf2.so
+mysql > CREATE FUNCTION do_system RETURNS INTEGER SONAME 'raptor_udf2.so';    <- If you get an error (errno: 11) at this point, that means you need to repeat the previous step with different MySQL location, e.g. /usr/lib/mysql/raptor_udf2.so or /usr/lib/x86_64-linux-gnu/mariadb19/plugin/raptor_udf2.so (Also, if gcc is installed, try to look for gcc solution)
 mysql > SELECT * FROM mysql.func;                  <- sanity check
 +-----------+-----+----------------+----------+
 | name      | ret | dl             | type     |
