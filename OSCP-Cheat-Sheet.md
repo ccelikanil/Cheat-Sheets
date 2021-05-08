@@ -780,6 +780,8 @@ Check exploits for running services:
 
 Always check MySQL version *(if applicable)* for **RAPTOR** exploit:
 
+**IMPORTANT NOTE:** IF RAPTOR WON'T WORK E.G. ``file too short``, go for [this](https://github.com/rapid7/metasploit-framework/tree/master/data/exploits/mysql)
+
 ```
 # mysql -V
 ```
