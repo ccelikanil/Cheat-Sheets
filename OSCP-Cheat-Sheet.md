@@ -782,6 +782,10 @@ Always check MySQL version *(if applicable)* for **RAPTOR** exploit:
 
 **IMPORTANT NOTE:** IF RAPTOR WON'T WORK E.G. ``file too short``, go for [this](https://github.com/rapid7/metasploit-framework/tree/master/data/exploits/mysql)
 
+**IMPORTANT NOTE #2:** IT IS IMPORTANT TO FIND THE CORRECT PATH TO PUT YOUR ``.so`` FILE. SOMETIMES ``/tmp`` WON'T WORK! E.G. IF ``PUT`` METHOD IS ALLOWED IN FTP, PUT YOUR FILE THROUGH FTP!!!!!
+
+**IMPORTANT NOTE #3:** SOMETIMES ``do_system`` WON'T WORK, USE ``sys_exec``!!
+
 ```
 # mysql -V
 ```
